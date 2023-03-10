@@ -27,11 +27,13 @@ const App = () => {
         const users = [];
         Object.keys(data).forEach(key => users.push({...data[key], id: key}))
           setUsersData(users)
+          console.log(data)
       })
     })
     .catch
   }, [])
 
+  //gestisco bottone dell'aggiunta utente
   const formSubmissionHandler = (event) => {
     event.preventDefault();
 
@@ -48,6 +50,25 @@ const App = () => {
       }
     };
     fetch(URL, REQUEST_ADD)
+    .then((response)=>{
+      console.log(response);
+    })
+    .catch((error)=>{
+      console.error(error);
+    })
+  }
+
+  //gestisco bottone della cancellazione utente
+  const buttonDeleterHandler = (id) => {
+
+    const REQUEST_DELETE = {
+      method: 'DELETE',
+      headers: {
+        "content-type":"application/json"
+      }
+    };
+    console.log("sei qui");
+    fetch('https://test-infobasic-defauLt-rtdb.europe-west1.firebasedatabase.app/users.json/' + id , REQUEST_DELETE)
     .then((response)=>{
       console.log(response);
     })
@@ -93,7 +114,7 @@ const App = () => {
                       <td>{value.userEmail}</td>
                       <td>
                         <button type="submit" className="btn btn-warning me-2">Modifica</button>
-                        <button type="submit" className="btn btn-danger">Cancella</button>
+                        <button type="submit" className="btn btn-danger" onClick={() => buttonDeleterHandler(value.id)}>Cancella</button>
                       </td>
                     </tr> 
                   )
