@@ -50,8 +50,21 @@ const App = () => {
       }
     };
     fetch(URL, REQUEST_ADD)
-    .then((response)=>{
-      console.log(response);
+    .then(()=>{
+      const OPTIONS = {
+        method: 'GET',
+      }
+  
+      fetch(URL, OPTIONS)
+      .then(response => {
+        response.json()
+        .then(data => {
+          const users = [];
+          Object.keys(data).forEach(key => users.push({...data[key], id: key}))
+            setUsersData(users)
+            console.log(data)
+        })
+      })
     })
     .catch((error)=>{
       console.error(error);
@@ -68,9 +81,25 @@ const App = () => {
       }
     };
     console.log("sei qui");
-    fetch('https://test-infobasic-defauLt-rtdb.europe-west1.firebasedatabase.app/users.json/' + id , REQUEST_DELETE)
-    .then((response)=>{
-      console.log(response);
+    fetch('https://test-infobasic-defauLt-rtdb.europe-west1.firebasedatabase.app/users/' + id + '.json', REQUEST_DELETE)
+    .then(()=>{
+    
+    //riaggiorno il dato dopo la cancellazione
+    const OPTIONS = {
+      method: 'GET',
+    }
+
+    fetch(URL, OPTIONS)
+    .then(response => {
+      response.json()
+      .then(data => {
+        const users = [];
+        Object.keys(data).forEach(key => users.push({...data[key], id: key}))
+          setUsersData(users)
+          console.log(data)
+      })
+    })
+      
     })
     .catch((error)=>{
       console.error(error);
