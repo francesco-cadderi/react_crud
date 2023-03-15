@@ -16,6 +16,7 @@ const App = () => {
     setEnteredEmail(event.target.value);
   };
 
+  //al caricamento della pagina prende i dati dal server
   useEffect(() => {
     const OPTIONS = {
       method: 'GET',
@@ -24,13 +25,14 @@ const App = () => {
     .then(response => {
       response.json()
       .then(data => {
+        //salva nell'array users gli oggetti definendo per ognuno di loro un id univoco 
         const users = [];
         Object.keys(data).forEach(key => users.push({...data[key], id: key}))
           setUsersData(users)
           console.log(data)
       })
     })
-    .catch
+    .catch(console.log("errore"))
   }, [])
 
   //gestisco bottone dell'aggiunta utente
@@ -49,12 +51,12 @@ const App = () => {
         "content-type":"application/json"
       }
     };
+
     fetch(URL, REQUEST_ADD)
     .then(()=>{
       const OPTIONS = {
         method: 'GET',
       }
-  
       fetch(URL, OPTIONS)
       .then(response => {
         response.json()
@@ -66,9 +68,7 @@ const App = () => {
         })
       })
     })
-    .catch((error)=>{
-      console.error(error);
-    })
+    .catch(console.log("errore"))
   }
 
   //gestisco bottone della cancellazione utente
@@ -80,30 +80,52 @@ const App = () => {
         "content-type":"application/json"
       }
     };
-    console.log("sei qui");
     fetch('https://test-infobasic-defauLt-rtdb.europe-west1.firebasedatabase.app/users/' + id + '.json', REQUEST_DELETE)
-    .then(()=>{
     
     //riaggiorno il dato dopo la cancellazione
-    const OPTIONS = {
-      method: 'GET',
-    }
+    .then(()=>{
+      const OPTIONS = {
+        method: 'GET',
+      }
+      fetch(URL, OPTIONS)
+      .then(response => {
+        response.json()
+        .then(data => {
+          const users = [];
+          Object.keys(data).forEach(key => users.push({...data[key], id: key}))
+            setUsersData(users)
+            console.log(data)
+        })
+      })  
+    })
+    .catch(console.log("errore"))
+  }
 
-    fetch(URL, OPTIONS)
-    .then(response => {
-      response.json()
+  /* non è che per caso devi fare un nuovo return per creare un form exnovo? avrebbe senso
+  soprattutto perché i value sono già occupati e poi devi fare i pulsanti nuovi
+  
+  enteredUserName dovrebbe andare a sostituirsi
+  */
+
+  const buttonModifyHandler = (id) => {
+
+  const OPTIONS = {
+    method: 'GET',
+  }
+
+  fetch(URL, OPTIONS)
+  .then(response => {
+    response.json()
       .then(data => {
         const users = [];
         Object.keys(data).forEach(key => users.push({...data[key], id: key}))
-          setUsersData(users)
-          console.log(data)
+          /* setEnteredUsername(users.key.userName)
+          setEnteredEmail(users.key.userEmail) */
+          //poi prova il .find sull'array
+          (console.log(data))
       })
-    })
-      
-    })
-    .catch((error)=>{
-      console.error(error);
-    })
+  })
+  .catch(console.log("errore"))
   }
 
   return <>
@@ -114,11 +136,11 @@ const App = () => {
           <form onSubmit={formSubmissionHandler}>
             <div className="form-group pt-2">
               <label className="pb-2" htmlFor="nome">Nome</label>
-              <input onChange={usernameInputChangeHandler} type="text" className="form-control" id="nome" placeholder="nome" value={enteredUsername}/>
+              <input onChange={usernameInputChangeHandler} value={enteredUsername} type="text" className="form-control" id="nome" placeholder="nome"/>
             </div>
             <div className="form-group py-2">
               <label className="pb-2" htmlFor="email">Email</label>
-              <input onChange={emailInputChangeHandler} type="text" className="form-control" id="email" placeholder="email" value={enteredEmail}/>
+              <input onChange={emailInputChangeHandler} value={enteredEmail} type="text" className="form-control" id="email" placeholder="email"/>
             </div>
             <button type="submit" className="btn btn-primary">Aggiungi</button>
           </form>
@@ -142,7 +164,7 @@ const App = () => {
                       <td>{value.userName}</td>
                       <td>{value.userEmail}</td>
                       <td>
-                        <button type="submit" className="btn btn-warning me-2">Modifica</button>
+                        <button type="submit" className="btn btn-warning me-2" onClick={() => buttonModifyHandler(value.id)}>Modifica</button>
                         <button type="submit" className="btn btn-danger" onClick={() => buttonDeleterHandler(value.id)}>Cancella</button>
                       </td>
                     </tr> 
